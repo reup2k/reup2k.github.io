@@ -84,6 +84,33 @@ body {
   object-fit: cover;
 }
 
+.theme-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.theme-button {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: grey;
+  color: #fff;
+  cursor: pointer;
+  margin: 5px;
+  flex: 1;
+  min-width: 150px;
+  transition: background-color 0.3s ease;
+}
+
+.theme-button.selected {
+  background-color: #682145;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
 #quiz-history-container {
   max-height: 400px; /* Limite de altura para o histórico */
   overflow-y: auto; /* Adiciona rolagem vertical */
@@ -100,7 +127,13 @@ body {
 }
 
 #quiz-history-list li {
-  padding: 0;
+  padding: 10px 0;
+  border-bottom: 1px solid #ccc;
+  font-size: 14px;
+}
+
+#quiz-history-list li:last-child {
+  border-bottom: none; /* Remove a borda do último item */
 }
 
 #question-count-selector {
@@ -132,12 +165,17 @@ body {
   padding: 10px;
   border: none;
   border-radius: 5px;
-  background-color: #682145;
   color: #fff;
   cursor: pointer;
   margin: 5px;
   flex: 1;
 }
+
+.theme-button selected { 
+    background-color: #8B2B5C;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
 
 @keyframes slideUp {
     0% {
@@ -164,9 +202,9 @@ body {
     align-items: center;
     z-index: 9999;
     transition: transform 0.5s ease, opacity 0.5s ease;
-}
-
-#loading-screen.hidden {
+  }
+  
+  #loading-screen.hidden {
     animation: slideUp 0.5s forwards;
 }
 
@@ -177,7 +215,45 @@ body {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   text-align: center;
   width: 50%;
-  /* margin-top: 20px; */
+  margin-left: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 80%;
+}
+
+#audio-control {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+#toggle-music {
+  padding: 10px 20px;
+  background-color: #682145;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+#toggle-music:hover {
+  background-color: #8B2B5C;
+}
+
+#quiz-container {
+  position: relative; /* Adicione esta linha para que o posicionamento absoluto do audio-control funcione corretamente */
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 50%;
+  margin-left: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -259,6 +335,7 @@ button:disabled {
   cursor: pointer;
   margin-top: 20px;
 }
+
 
 .imagemTDMLoading {
   width: 100px;

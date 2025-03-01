@@ -5,6 +5,8 @@ let questions = [];
 let currentQuestionIndex = 0;
 let totalQuestions = 0;
 let answersGiven = [];
+let selectedTheme = "geral";
+let backgroundMusic;
 
 document.addEventListener("DOMContentLoaded", () => {
     const profileCreator = document.getElementById("profile-creator");
@@ -16,7 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const quizResults = document.getElementById("quiz-results");
     const correctSound = document.getElementById("correct-sound");
     const incorrectSound = document.getElementById("incorrect-sound");
-
+    const toggleMusicButton = document.getElementById("toggle-music");
+    const musicIcon = document.getElementById("music-icon");
     const savedName = localStorage.getItem("name");
     const savedPhoto = localStorage.getItem("photo") || "imgs/default-photo.png";
     const overallCorrectCount = parseInt(localStorage.getItem("overallCertas")) || 0;
@@ -28,6 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
         profileCreator.style.display = "none";
         mainContent.style.display = "flex";
         profile.style.display = "block";
+        backgroundMusic = document.getElementById("background-music");
         document.getElementById("profile-name").textContent = savedName;
         document.getElementById("overall-correct-score").textContent = `Total de respostas corretas: ${overallCorrectCount}`;
         document.getElementById("overall-wrong-score").textContent = `Total de respostas erradas: ${overallWrongCount}`;
@@ -38,6 +42,31 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
         profileCreator.style.display = "block";
     }
+    
+    toggleMusicButton.addEventListener("click", () => {
+        if (backgroundMusic.paused) {
+            backgroundMusic.play();
+            musicIcon.textContent = "🔊";
+        } else {
+            backgroundMusic.pause();
+            musicIcon.textContent = "🔇";
+        }
+    });
+    
+        // Modificar a função showResults para parar a música
+        function showResults() {
+            const quizContainer = document.getElementById("quiz-container");
+            const quizResults = document.getElementById("quiz-results");
+            // ... código existente ...
+
+            // Parar a música quando o quiz termina
+            backgroundMusic.pause();
+            backgroundMusic.currentTime = 0;
+            document.getElementById("music-icon").textContent = "🔇";
+        
+
+            // ... resto do código existente ...
+        }
 
     document.getElementById("profile-form").addEventListener("submit", (event) => {
         event.preventDefault();
@@ -78,15 +107,37 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    document.querySelectorAll(".question-count").forEach(button => {
+    // Adicionar eventos aos botões de tema
+    document.querySelectorAll(".theme-button").forEach(button => {
         button.addEventListener("click", () => {
-            totalQuestions = parseInt(button.getAttribute("data-count"));
-            questionCountSelector.style.display = "none";
-            loadingScreen.classList.remove("hidden");
-            loadingScreen.style.display = "flex";
-            loadQuiz();
+            // Remover seleção anterior
+            document.querySelectorAll(".theme-button").forEach(btn => {
+                btn.classList.remove("selected");
+            });
+            // Adicionar seleção ao botão clicado
+            button.classList.add("selected");
+            selectedTheme = button.getAttribute("data-theme");
         });
     });
+
+    // Modificar o evento de clique nos botões de contagem
+            // Modificar o evento de clique nos botões de contagem
+            document.querySelectorAll(".question-count").forEach(button => {
+                button.addEventListener("click", () => {
+                    if (!selectedTheme) {
+                        alert("Por favor, selecione um tema primeiro!");
+                        return;
+                    }
+                    totalQuestions = parseInt(button.getAttribute("data-count"));
+                    questionCountSelector.style.display = "none";
+                    loadingScreen.classList.remove("hidden");
+                    loadingScreen.style.display = "flex";
+                    // Iniciar a música quando o quiz começa com volume reduzido
+                    backgroundMusic.volume = 0.02;
+                    backgroundMusic.play();
+                    loadQuiz();
+                });
+            });
 
     document.getElementById("restart-quiz").addEventListener("click", () => {
         quizResults.style.display = "none";
@@ -126,45 +177,52 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log("No answer selected");
         }
     });
-
-    document.getElementById("previous-question").addEventListener("click", () => {
-        if (currentQuestionIndex > 0) {
-            currentQuestionIndex--;
-            displayQuestion();
-        }
-    });
 });
 
 function loadQuiz() {
     console.log("Loading quiz...");
     fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
-            console.log("Data loaded:", data);
             if (!Array.isArray(data) || data.length < 2) {
                 throw new Error("Invalid data format");
             }
-            // Assuming first row is headers and subsequent rows have questions and answers
-            questions = data.slice(1).map(row => ({
+
+            // Filtrar questões por tema
+            const allQuestions = data.slice(1).map(row => ({
                 question: row[0],
-                answers: row.slice(1),
-                correct: row[1] // Assuming the first answer is the correct one
+                answers: row.slice(1, -1),
+                correct: row[1],
+                theme: row[row.length - 1] // Assumindo que o tema está na última coluna
             }));
 
-            // Shuffle the questions array
-            questions = shuffle(questions).slice(0, totalQuestions);
+            console.log("All questions loaded:", allQuestions);
 
-            // Hide the loading screen immediately
-            const loadingScreen = document.getElementById("loading-screen");
-            loadingScreen.style.display = "none";
+            // Filtrar questões pelo tema selecionado
+            const themeQuestions = selectedTheme === "geral" 
+                ? allQuestions 
+                : allQuestions.filter(q => q.theme === selectedTheme);
+
+            console.log("Filtered questions by theme:", themeQuestions);
+
+            // Embaralhar e selecionar o número de questões desejado
+            questions = shuffle(themeQuestions).slice(0, totalQuestions);
+
+            console.log("Selected questions:", questions);
+
+            // Exibir o quiz primeiro
             const quizContainer = document.getElementById("quiz-container");
             quizContainer.style.display = "block";
             console.log("Quiz container displayed");
+
+            // Hide the loading screen with a smooth fade-out
+            const loadingScreen = document.getElementById("loading-screen");
+            setTimeout(() => {
+                loadingScreen.classList.add("hidden");
+                setTimeout(() => {
+                    loadingScreen.style.display = "none";
+                }, 500); // Match the duration of the CSS transition
+            }, 100); // Small delay to ensure quiz is displayed first
 
             displayQuestion();
             updatePercentage();
@@ -172,7 +230,6 @@ function loadQuiz() {
         })
         .catch(error => {
             console.error("Erro ao carregar os dados:", error);
-            document.getElementById("question").textContent = "Erro ao carregar a pergunta.";
         });
 }
 
@@ -199,6 +256,8 @@ function displayQuestion() {
     const currentQuestion = questions[currentQuestionIndex];
     correctAnswer = currentQuestion.correct;
 
+    console.log("Current question:", currentQuestion);
+
     questionElement.textContent = currentQuestion.question;
     const shuffledAnswers = shuffle([...currentQuestion.answers]);
     answersList.innerHTML = shuffledAnswers.map(ans => `<li>${ans}</li>`).join("");
@@ -222,9 +281,6 @@ function displayQuestion() {
             }
         });
     }
-
-    // Mostrar ou esconder o botão "Voltar"
-    document.getElementById("previous-question").style.display = currentQuestionIndex > 0 ? "block" : "none";
 
     updateProgressBar(); // Atualize a barra de progresso ao exibir uma nova pergunta
 }
@@ -273,6 +329,7 @@ function showResults() {
     quizHistory.push({
         correctCount,
         wrongCount,
+        theme: selectedTheme, // Adiciona o tema ao histórico
         date: new Date().toLocaleString()
     });
     localStorage.setItem("quizHistory", JSON.stringify(quizHistory));
@@ -297,7 +354,7 @@ function displayQuizHistory(quizHistory) {
     quizHistoryList.innerHTML = "";
     quizHistory.forEach(quiz => {
         const listItem = document.createElement("li");
-        listItem.textContent = `Data: ${quiz.date}, Corretas: ${quiz.correctCount}, Erradas: ${quiz.wrongCount}`;
+        listItem.textContent = `Data: ${quiz.date}, Tema: ${quiz.theme}, Corretas: ${quiz.correctCount}, Erradas: ${quiz.wrongCount}`;
         quizHistoryList.appendChild(listItem);
     });
     const overallCorrectCount = parseInt(localStorage.getItem("overallCertas")) || 0;

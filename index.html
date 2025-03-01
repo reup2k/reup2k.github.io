@@ -39,17 +39,29 @@
             <div id="progress-bar-container">
                 <div id="progress-bar"></div>
             </div>
-            <h2 id="question">Carregando...</h2>
+            <h2 id="question">A Carregar...</h2>
             <ul id="answers"></ul>
             <button id="submit-answer" disabled>Enviar Resposta</button>
             <p id="result"></p>
+            <div id="audio-control">
+                <button id="toggle-music" class="theme-button">
+                    <span id="music-icon">🔊</span> Tunadão
+                </button>
+            </div>
         </div>
         <div id="question-count-selector" style="display: none;">
-            <h2>Selecione um Quizz</h2>
-            <button class="question-count" data-count="11">11 Perguntas</button>
-            <button class="question-count" data-count="22">22 Perguntas</button>
-            <h2>Quizzes Temáticos (WIP)</h2>
-            <button class="question-count">Ruas</button>
+            <h2>Selecione um Tema</h2>
+            <div class="theme-buttons">
+                <button class="theme-button selected" data-theme="geral">Quiz Geral</button>
+                <button class="theme-button" data-theme="ruas">Ruas</button>
+                <button class="theme-button" data-theme="hierarquia">Hierarquia</button>
+                <button class="theme-button" data-theme="trajes">Trajes</button>
+            </div>
+            <h2>Selecione o Número de Perguntas</h2>
+            <div class="question-count-buttons">
+                <button class="question-count" data-count="11">11 Perguntas</button>
+                <button class="question-count" data-count="22">22 Perguntas</button>
+            </div>
         </div>
         <div id="quiz-results" style="display: none;">
           <h2>Resultados</h2>
@@ -60,5 +72,6 @@
     </div>
     <audio id="correct-sound" src="sounds/correct.mp3"></audio>
     <audio id="incorrect-sound" src="sounds/incorrect.mp3"></audio>
+    <audio id="background-music" src="sounds/EstudantedeViseu.mp3" loop></audio>
 </body>
 </html>

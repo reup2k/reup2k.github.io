@@ -8,6 +8,54 @@ let answersGiven = [];
 let selectedTheme = "geral";
 let backgroundMusic;
 
+console.log("               FEITO POR CALOIROS DE TDM 2024/2025");
+const asciiArt = `
+                     ▗▄▄▙▟████████▟▄▙▄▄                     
+                  ▄▟████▀▀▀▀▀▀▀▀▀▀▀▀▀▜███▙▄▖                
+               ▗▟██▛▀                   ▀▀███▖              
+              ▐██▀          ▄▟█▄ ▜█▄▄        ▀▜█▙▖            
+             ▟█▛        ▗██████ ▜███▄        ▜██            
+            ▟█▛        ▟██████▀ ▖ ▀███        ▝█▙▖          
+           ▗██        ▗█████▀ ▄███▙▗▝▜▙        ▜█▖          
+           ▐█▌ ▄█▖    ▐████▘▗▟██████▙▖▚     ▟▙▖ ██          
+           ▜█ ▐█▛     ▐██▛▘▄██████████▖     ▝██▝▜█          
+           ▟█ ▐█▌      ██▘▗███████████▖     ▐██ ▟█          
+           ▟█▌▝██      ▝▙▗███████████▀      ▄█▛ ██          
+           ▐█▙ ▜█▌       ▐███████▛▙▛▘      ▗██▘▗█▛          
+            ██▖▐█▙  ▗▄▄▖   ▀▀▛▛▛▀▀   ▗▄▄▗  ▗██ ▟█▘          
+            ▝██▄█▛ ▐█████▙▄       ▗▄█████▙  ██▟█▘           
+             ▝███▌ ▐████████▙   ▗█████████ ▝███▀            
+     ▗▗        ██▘ █████████▙   ▐█████▜▟█▟▌ ██▖      ▖▄▗    
+    ▗████▄     ██  ▜███████▀     ▘▜███████  ▐█▙    ▗████▙   
+    ██▖▝██▖    █▌   ▀▀▀▀▀▘   ▟▖█▖   ▝▀▀▀▀▘  ▗█▙   ▗█▛▘ ▜█▘  
+   ▐█▛  ▝▜█▄   ██▖          ▟█ ▟█▖          ██▌ ▗▄██▀  ▐█▌  
+  ▟█▛▘    ▝▜█▙▄▟█▙▄        ▐██▘██▛        ▄▟█▟▙███▀     ▀██▖
+ ▐█▌  ▗▄▄    ▀▜██████▙▄    ▐██▘▜█▛    ▗▟██████▀▀    ▄▄▄  ▗██
+ ▝▜█████▜█▙▄▖   ▝▀▜█████▖  ▝▛▀  ▜▀   ▟██▜█▛▀    ▗▄▟██▟█████▀
+         ▝▀███▄▄   █▙▜███           ▟██▛▟█▌  ▗▄██▛▛▘        
+             ▀▀██▙▄▟█▖█▜▛▙▄▄▄▄▄▄▄▄▄▄▀██▐██▄▟██▛▀            
+                ▝▀▜██▘▐█▙▟ █▐▘▜ █▐▘▜▗██▚█▜▛▀                
+                  ▗██▖▐█▌▜▚█▟▙█▄█▟▌█▘██ ██▖                 
+               ▄▟████▌ ▀▚█ █▐▖▟ █▐▖▜▄▛▘▝██▜█▙▄▖             
+      ▄▄▄▄▄▄▄▙██▀▘  ▜█   ▝▀▀▞▌▛▀▛▀▀▘   ██▌  ▀▜██▙▄▗▗▄▄▖     
+     ▟█▀▜▛█▜▜▀▘   ▗▄███▖             ▗▟██▄▄    ▘▀█▜█▀▜██▖   
+     ▜█▙       ▄▟██▛▀▝▜██▄▄       ▗▄▟█▛▘▀▜██▙▄▖      ▄▟█▘   
+      ▜██▄   ▟██▀▘     ▝▀███████████▀▀     ▝▜██▙▖   ██▛▘    
+       ▝██  ▟█▌            ▘▘▀▀▘▀▝            ▝▜█▌  █▌      
+       ▝█▙▄▟█▛                                  ██▄▟█▙      
+        ▀██▛▘                                    ▀███       `;
+
+console.log(asciiArt);
+console.log("               Renato Sobral pv28267");
+console.log("               Alexandre Nogueira pv30210");
+console.log("               Miguel Cruz pv30227");
+console.log("               Ana Caló pv30249");
+console.log("               Diana Santos pv30233");
+console.log("               Gabriel Santos pv31352");
+console.log("               Daniel Pereira pv30229");
+console.log("               Simbell Quadros pv30252");
+
+
 document.addEventListener("DOMContentLoaded", () => {
     const profileCreator = document.getElementById("profile-creator");
     const mainContent = document.getElementById("main-content");
@@ -43,6 +91,75 @@ document.addEventListener("DOMContentLoaded", () => {
         profileCreator.style.display = "block";
     }
     
+    // Mobile navigation
+    const mobileNav = document.getElementById("mobile-nav");
+    const showProfileButton = document.getElementById("show-profile");
+    const showQuizButton = document.getElementById("show-quiz");
+    const quizSection = document.getElementById("question-count-selector");
+
+    function showProfile() {
+        // Hide all sections first
+        profile.classList.remove("active");
+        quizSection.classList.remove("active");
+        quizContainer.classList.remove("active");
+        
+        // Show profile
+        profile.classList.add("active");
+        
+        // Update button styles
+        showProfileButton.style.backgroundColor = "#682145";
+        showQuizButton.style.backgroundColor = "rgb(65 65 65 / 28%)";
+    }
+
+    function showQuiz() {
+        // Hide all sections first
+        profile.classList.remove("active");
+        quizSection.classList.remove("active");
+        quizContainer.classList.remove("active");
+        
+        // Show appropriate quiz section
+        if (!quizContainer.style.display || quizContainer.style.display === "none") {
+            quizSection.classList.add("active");
+        } else {
+            quizContainer.classList.add("active");
+        }
+        
+        // Update button styles
+        showProfileButton.style.backgroundColor = "rgb(65 65 65 / 28%)";
+        showQuizButton.style.backgroundColor = "#682145";
+    }
+
+    // Initialize mobile navigation
+    if (window.innerWidth <= 700) {
+        mobileNav.style.display = "flex";
+        showProfile(); // Show profile by default
+    }
+
+    // Add event listeners for mobile navigation
+    if (showProfileButton && showQuizButton) {
+        showProfileButton.addEventListener("click", showProfile);
+        showQuizButton.addEventListener("click", showQuiz);
+    }
+
+    // Handle window resize
+    window.addEventListener("resize", () => {
+        if (window.innerWidth <= 700) {
+            mobileNav.style.display = "flex";
+            if (!profile.classList.contains("active") && 
+                !quizSection.classList.contains("active") && 
+                !quizContainer.classList.contains("active")) {
+                showProfile(); // Default to profile if nothing is active
+            }
+        } else {
+            mobileNav.style.display = "none";
+            // Reset displays for desktop view
+            profile.style.display = "block";
+            profile.classList.remove("active");
+            quizSection.classList.remove("active");
+            quizContainer.classList.remove("active");
+        }
+    });
+
     toggleMusicButton.addEventListener("click", () => {
         if (backgroundMusic.paused) {
             backgroundMusic.play();
@@ -52,14 +169,20 @@ document.addEventListener("DOMContentLoaded", () => {
             musicIcon.textContent = "🔇";
         }
     });
-    
+
         // Modificar a função showResults para parar a música
         function showResults() {
             const quizContainer = document.getElementById("quiz-container");
             const quizResults = document.getElementById("quiz-results");
-            // ... código existente ...
 
-            // Parar a música quando o quiz termina
+            const mobileNav = document.getElementById("mobile-nav");
+            if (mobileNav && window.innerWidth <= 700) {
+                mobileNav.style.display = "flex";
+            }
+        
+            quizContainer.style.display = "none";
+            quizResults.style.display = "block";
+
             backgroundMusic.pause();
             backgroundMusic.currentTime = 0;
             document.getElementById("music-icon").textContent = "🔇";
@@ -132,7 +255,22 @@ document.addEventListener("DOMContentLoaded", () => {
                     questionCountSelector.style.display = "none";
                     loadingScreen.classList.remove("hidden");
                     loadingScreen.style.display = "flex";
-                    // Iniciar a música quando o quiz começa com volume reduzido
+                    
+                    // Hide mobile navigation when quiz starts
+                    const mobileNav = document.getElementById("mobile-nav");
+                    if (mobileNav) {
+                        mobileNav.style.display = "none";
+                    }
+                    
+                    // Remove active class from all sections
+                    profile.classList.remove("active");
+                    quizSection.classList.remove("active");
+                    quizContainer.classList.remove("active");
+                    
+                    // Add active class to quiz container
+                    quizContainer.classList.add("active");
+                    
+                    // Start quiz
                     backgroundMusic.volume = 0.02;
                     backgroundMusic.play();
                     loadQuiz();
@@ -140,15 +278,35 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
     document.getElementById("restart-quiz").addEventListener("click", () => {
+        const quizResults = document.getElementById("quiz-results");
+        const questionCountSelector = document.getElementById("question-count-selector");
+        const mobileNav = document.getElementById("mobile-nav");
+    
+        // Hide results and show question selector
         quizResults.style.display = "none";
         questionCountSelector.style.display = "block";
+        questionCountSelector.classList.add("active");
+        
+        // Show mobile navigation if on mobile
+        if (window.innerWidth <= 700) {
+            mobileNav.style.display = "flex";
+        }
+    
+        // Stop background music
+        if (backgroundMusic) {
+            backgroundMusic.pause();
+            backgroundMusic.currentTime = 0;
+        }
+    
+        // Reset quiz state
         currentQuestionIndex = 0;
         localStorage.setItem("certas", 0);
         localStorage.setItem("erradas", 0);
         answersGiven = [];
-        location.reload();
+        
+        // Update UI
         updatePercentage();
-        updateProgressBar(); // Atualize a barra de progresso ao reiniciar o quiz
+        updateProgressBar();
     });
 
     document.getElementById("submit-answer").addEventListener("click", () => {
@@ -326,16 +484,29 @@ function showResults() {
     const overallAverage = calculateOverallAverage(overallCorrectCount, overallWrongCount);
     const quizHistory = JSON.parse(localStorage.getItem("quizHistory")) || [];
 
+    // Add quiz to history
     quizHistory.push({
         correctCount,
         wrongCount,
-        theme: selectedTheme, // Adiciona o tema ao histórico
+        theme: selectedTheme,
         date: new Date().toLocaleString()
     });
     localStorage.setItem("quizHistory", JSON.stringify(quizHistory));
 
+    // Hide quiz container and remove active class
     quizContainer.style.display = "none";
+    quizContainer.classList.remove("active");
+
+    // Show results
     quizResults.style.display = "block";
+    
+    // Show mobile navigation if on mobile
+    const mobileNav = document.getElementById("mobile-nav");
+    if (mobileNav && window.innerWidth <= 700) {
+        mobileNav.style.display = "flex";
+    }
+
+    // Update results display
     document.getElementById("correct-count").textContent = `Respostas corretas: ${correctCount}`;
     document.getElementById("wrong-count").textContent = `Respostas erradas: ${wrongCount}`;
     document.getElementById("overall-correct-count").textContent = `Total de respostas corretas: ${overallCorrectCount}`;
@@ -354,7 +525,7 @@ function displayQuizHistory(quizHistory) {
     quizHistoryList.innerHTML = "";
     quizHistory.forEach(quiz => {
         const listItem = document.createElement("li");
-        listItem.textContent = `Data: ${quiz.date}, Tema: ${quiz.theme}, Corretas: ${quiz.correctCount}, Erradas: ${quiz.wrongCount}`;
+        listItem.innerHTML = `Tema: ${quiz.theme} | 🕒: ${quiz.date} | ✅: ${quiz.correctCount} | ❌: ${quiz.wrongCount}`;
         quizHistoryList.appendChild(listItem);
     });
     const overallCorrectCount = parseInt(localStorage.getItem("overallCertas")) || 0;

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BoaPraxe</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <div id="profile-creator">
+        <h2>Insere a tua informação:</h2>
+        <form id="profile-form">
+            <label for="name">Caloiro:</label>
+            <input type="text" id="name" name="name" required>
+            <label for="photo">Foto:</label>
+            <input type="file" id="photo" name="photo" accept="image/*">
+            <button type="submit">Salvar</button>
+        </form>
+    </div>
+    <div id="main-content" style="display: none;">
+        <div id="profile">
+            <img id="profile-photo" src="imgs/default-photo.svg" alt="Foto do perfil" class="profile-photo">
+            <h2 id="profile-name"></h2>
+            <p id="overall-correct-score"></p>
+            <p id="overall-wrong-score"></p>
+            <p id="overall-average"></p>
+            <div id="quiz-history">
+                <h3>Histórico de Quizes Finalizados</h3>
+                <div id="quiz-history-container">
+                    <ul id="quiz-history-list"></ul>
+                </div>
+            </div>
+        </div>
+        <div id="loading-screen" style="display: none;">
+            <img class="imagemTDMLoading" src="svg/TDM.svg">
+        </div>
+        <div id="quiz-container" style="display: none;">
+            <div id="progress-bar-container">
+                <div id="progress-bar"></div>
+            </div>
+            <h2 id="question">Carregando...</h2>
+            <ul id="answers"></ul>
+            <button id="submit-answer" disabled>Enviar Resposta</button>
+            <p id="result"></p>
+        </div>
+        <div id="question-count-selector" style="display: none;">
+            <h2>Selecione um Quizz</h2>
+            <button class="question-count" data-count="11">11 Perguntas</button>
+            <button class="question-count" data-count="22">22 Perguntas</button>
+            <h2>Quizzes Temáticos (WIP)</h2>
+            <button class="question-count">Ruas</button>
+        </div>
+        <div id="quiz-results" style="display: none;">
+          <h2>Resultados</h2>
+          <p id="correct-count"></p>
+          <p id="wrong-count"></p>
+          <button id="restart-quiz">Voltar</button>
+      </div>
+    </div>
+    <audio id="correct-sound" src="sounds/correct.mp3"></audio>
+    <audio id="incorrect-sound" src="sounds/incorrect.mp3"></audio>
+</body>
+</html>

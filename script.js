@@ -54,6 +54,9 @@ console.log("               Diana Santos pv30233");
 console.log("               Gabriel Santos pv31352");
 console.log("               Daniel Pereira pv30229");
 console.log("               Simbell Quadros pv30252");
+console.log("               Rodrigo Albuquerque pv30224");
+console.log("               Gabriela Ferreira pv30219");
+console.log("               Dinis Alves pv28377");
 
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -74,6 +77,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const overallWrongCount = parseInt(localStorage.getItem("overallErradas")) || 0;
     const overallAverage = calculateOverallAverage(overallCorrectCount, overallWrongCount);
     const quizHistory = JSON.parse(localStorage.getItem("quizHistory")) || [];
+    const isMusicMuted = localStorage.getItem("musicMuted") !== "true"; // Changed this line
+    backgroundMusic = document.getElementById("background-music");
+    backgroundMusic.muted = isMusicMuted;
+    musicIcon.textContent = isMusicMuted ? "🔇" : "🔊";
+    
+
 
     if (savedName) {
         profileCreator.style.display = "none";
@@ -81,9 +90,9 @@ document.addEventListener("DOMContentLoaded", () => {
         profile.style.display = "block";
         backgroundMusic = document.getElementById("background-music");
         document.getElementById("profile-name").textContent = savedName;
-        document.getElementById("overall-correct-score").textContent = `Total de respostas corretas: ${overallCorrectCount}`;
-        document.getElementById("overall-wrong-score").textContent = `Total de respostas erradas: ${overallWrongCount}`;
-        document.getElementById("overall-average").textContent = `Indíce de Bom Caloiro: ${overallAverage}%`;
+        document.getElementById("overall-correct-score").textContent = overallCorrectCount;
+        document.getElementById("overall-wrong-score").textContent = overallWrongCount;
+        document.getElementById("overall-average").textContent = `${overallAverage}%`;
         document.getElementById("profile-photo").src = savedPhoto;
         displayQuizHistory(quizHistory);
         questionCountSelector.style.display = "block";
@@ -160,16 +169,20 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    
+
     toggleMusicButton.addEventListener("click", () => {
-        if (backgroundMusic.paused) {
+        if (backgroundMusic.muted) {
+            backgroundMusic.muted = false;
             backgroundMusic.play();
             musicIcon.textContent = "🔊";
+            localStorage.setItem("musicMuted", "false"); // Save preference
         } else {
-            backgroundMusic.pause();
+            backgroundMusic.muted = true;
             musicIcon.textContent = "🔇";
-        }
+            localStorage.setItem("musicMuted", "true"); // Save preference
+        }    
     });
-
         // Modificar a função showResults para parar a música
         function showResults() {
             const quizContainer = document.getElementById("quiz-container");
@@ -188,47 +201,61 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("music-icon").textContent = "🔇";
         
 
-            // ... resto do código existente ...
         }
 
-    document.getElementById("profile-form").addEventListener("submit", (event) => {
-        event.preventDefault();
-        const name = document.getElementById("name").value;
-        const photoInput = document.getElementById("photo");
-        const reader = new FileReader();
-
-        if (photoInput.files.length > 0) {
-            reader.onload = function (e) {
-                const photoDataUrl = e.target.result;
+        document.getElementById("profile-form").addEventListener("submit", (event) => {
+            event.preventDefault();
+            const name = document.getElementById("name").value;
+            const photoInput = document.getElementById("photo");
+            const reader = new FileReader();
+            
+            // Validate form
+            if (!name.trim()) {
+                alert("Por favor insira um nome");
+                return;
+            }
+        
+            const handleProfileUpdate = (photoDataUrl) => {
+                // Save to localStorage
                 localStorage.setItem("name", name);
                 localStorage.setItem("photo", photoDataUrl);
-                profileCreator.style.display = "none";
-                mainContent.style.display = "flex";
-                profile.style.display = "block";
+        
+                // Update visibility states
+                document.getElementById("profile-creator").style.display = "none";
+                document.getElementById("main-content").style.display = "flex";
+                document.getElementById("profile").style.display = "block";
+                document.getElementById("question-count-selector").style.display = "block";
+        
+                // Update profile display
                 document.getElementById("profile-name").textContent = name;
                 document.getElementById("profile-photo").src = photoDataUrl;
-                document.getElementById("overall-correct-score").textContent = `Total de respostas corretas: ${overallCorrectCount}`;
-                document.getElementById("overall-wrong-score").textContent = `Total de respostas erradas: ${overallWrongCount}`;
-                document.getElementById("overall-average").textContent = `Indíce de Bom Caloiro: ${overallAverage}%`;
+                
+                // Update stats
+                const overallCorrectCount = parseInt(localStorage.getItem("overallCertas")) || 0;
+                const overallWrongCount = parseInt(localStorage.getItem("overallErradas")) || 0;
+                const overallAverage = calculateOverallAverage(overallCorrectCount, overallWrongCount);
+                
+                document.getElementById("overall-correct-score").textContent = 
+                    `Total de respostas corretas: ${overallCorrectCount}`;
+                document.getElementById("overall-wrong-score").textContent = 
+                    `Total de respostas erradas: ${overallWrongCount}`;
+                document.getElementById("overall-average").textContent = 
+                    `Indíce de Bom Caloiro: ${overallAverage}%`;
+        
+                // Display quiz history
+                const quizHistory = JSON.parse(localStorage.getItem("quizHistory")) || [];
                 displayQuizHistory(quizHistory);
-                questionCountSelector.style.display = "block";
             };
-            reader.readAsDataURL(photoInput.files[0]);
-        } else {
-            localStorage.setItem("name", name);
-            localStorage.setItem("photo", "imgs/default-photo.png");
-            profileCreator.style.display = "none";
-            mainContent.style.display = "flex";
-            profile.style.display = "block";
-            document.getElementById("profile-name").textContent = name;
-            document.getElementById("profile-photo").src = "imgs/default-photo.png";
-            document.getElementById("overall-correct-score").textContent = `Total de respostas corretas: ${overallCorrectCount}`;
-            document.getElementById("overall-wrong-score").textContent = `Total de respostas erradas: ${overallWrongCount}`;
-            document.getElementById("overall-average").textContent = `Indíce de Bom Caloiro: ${overallAverage}%`;
-            displayQuizHistory(quizHistory);
-            questionCountSelector.style.display = "block";
-        }
-    });
+        
+            // Handle photo upload
+            if (photoInput.files.length > 0) {
+                reader.onload = (e) => handleProfileUpdate(e.target.result);
+                reader.readAsDataURL(photoInput.files[0]);
+            } else {
+                // Use default photo
+                handleProfileUpdate("imgs/default-photo.png");
+            }
+        });
 
     // Adicionar eventos aos botões de tema
     document.querySelectorAll(".theme-button").forEach(button => {
@@ -270,6 +297,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     // Add active class to quiz container
                     quizContainer.classList.add("active");
                     
+                    // Initialize music as muted by default if no preference is saved
+                    const isMusicMuted = localStorage.getItem("musicMuted") === null ? true : localStorage.getItem("musicMuted") === "true";
+                    backgroundMusic = document.getElementById("background-music");
+                    backgroundMusic.muted = isMusicMuted;
+                    musicIcon.textContent = isMusicMuted ? "🔇" : "🔊";
+
                     // Start quiz
                     backgroundMusic.volume = 0.02;
                     backgroundMusic.play();
@@ -281,6 +314,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const quizResults = document.getElementById("quiz-results");
         const questionCountSelector = document.getElementById("question-count-selector");
         const mobileNav = document.getElementById("mobile-nav");
+        window.location.reload(true);
     
         // Hide results and show question selector
         quizResults.style.display = "none";
@@ -312,6 +346,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("submit-answer").addEventListener("click", () => {
         console.log("Submit answer clicked");
         const selectedAnswer = document.querySelector("#answers li.selected");
+        
 
         if (selectedAnswer) {
             console.log("Selected answer:", selectedAnswer.textContent);
@@ -339,6 +374,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function loadQuiz() {
     console.log("Loading quiz...");
+    console.log("Selected theme:", selectedTheme); // Debug do tema selecionado
+
+    const loadingTimeout = setTimeout(() => {
+        const loadingScreen = document.getElementById("loading-screen");
+        if (loadingScreen.style.display !== "none") {
+            console.error("Loading timeout - forcing quiz display");
+            loadingScreen.classList.add("hidden");
+            loadingScreen.style.display = "none";
+            const quizContainer = document.getElementById("quiz-container");
+            quizContainer.style.display = "block";
+            quizContainer.classList.add("active");
+        }
+    }, 5000); // 5 second timeout
+
     fetch(url)
         .then(response => response.json())
         .then(data => {
@@ -349,7 +398,7 @@ function loadQuiz() {
             // Filtrar questões por tema
             const allQuestions = data.slice(1).map(row => ({
                 question: row[0],
-                answers: row.slice(1, -1),
+                answers: row.slice(1, 5),
                 correct: row[1],
                 theme: row[row.length - 1] // Assumindo que o tema está na última coluna
             }));
@@ -483,15 +532,46 @@ function showResults() {
     const overallWrongCount = parseInt(localStorage.getItem("overallErradas")) || 0;
     const overallAverage = calculateOverallAverage(overallCorrectCount, overallWrongCount);
     const quizHistory = JSON.parse(localStorage.getItem("quizHistory")) || [];
+    const questionsReview = document.getElementById("questions-review");
+    
+
+        // Update scores
+        correctCount.textContent = `Respostas Corretas: ${localStorage.getItem("certas") || 0}`;
+        wrongCount.textContent = `Respostas Erradas: ${localStorage.getItem("erradas") || 0}`;
+    
+        // Clear and populate questions review
+        questionsReview.innerHTML = "";
+        questions.forEach((question, index) => {
+            const userAnswer = answersGiven[index];
+            const isCorrect = userAnswer === question.correct;
+            
+            const questionDiv = document.createElement("div");
+            questionDiv.className = `question-review ${isCorrect ? 'correct' : 'incorrect'}`;
+            questionDiv.innerHTML = `
+            <h3>Pergunta ${index + 1}</h3>
+            <p class="question-text">${question.question}</p>
+            <p class="correct-answer">Resposta Correta: ${question.correct}</p>
+            <p class="user-answer">Sua Resposta: ${userAnswer || 'Não respondida'}</p>
+        `;
+        questionsReview.appendChild(questionDiv);
+    });
+    
+    // Show results section
+    quizContainer.style.display = "none";
+    quizResults.style.display = "block";
+    
+
 
     // Add quiz to history
     quizHistory.push({
         correctCount,
         wrongCount,
         theme: selectedTheme,
-        date: new Date().toLocaleString()
+        date: new Date().toLocaleString(),
+        totalQuestions: totalQuestions  // Add this line
     });
     localStorage.setItem("quizHistory", JSON.stringify(quizHistory));
+
 
     // Hide quiz container and remove active class
     quizContainer.style.display = "none";
@@ -511,7 +591,7 @@ function showResults() {
     document.getElementById("wrong-count").textContent = `Respostas erradas: ${wrongCount}`;
     document.getElementById("overall-correct-count").textContent = `Total de respostas corretas: ${overallCorrectCount}`;
     document.getElementById("overall-wrong-count").textContent = `Total de respostas erradas: ${overallWrongCount}`;
-    document.getElementById("overall-average").textContent = `Indíce de Bom Caloiro: ${overallAverage}%`;
+    document.getElementById("overall-average").textContent = `Índice de Bom Caloiro: ${overallAverage}%`;
     displayQuizHistory(quizHistory);
 }
 
@@ -523,11 +603,13 @@ function calculateOverallAverage(correctCount, wrongCount) {
 function displayQuizHistory(quizHistory) {
     const quizHistoryList = document.getElementById("quiz-history-list");
     quizHistoryList.innerHTML = "";
+
     quizHistory.forEach(quiz => {
         const listItem = document.createElement("li");
-        listItem.innerHTML = `Tema: ${quiz.theme} | 🕒: ${quiz.date} | ✅: ${quiz.correctCount} | ❌: ${quiz.wrongCount}`;
+        listItem.innerHTML = `💡: ${quiz.theme} |  🔢: ${quiz.totalQuestions || "N/A"} | 🕒: ${quiz.date} | ✅: ${quiz.correctCount} | ❌: ${quiz.wrongCount}`;
         quizHistoryList.appendChild(listItem);
     });
+
     const overallCorrectCount = parseInt(localStorage.getItem("overallCertas")) || 0;
     const overallWrongCount = parseInt(localStorage.getItem("overallErradas")) || 0;
     const overallAverage = calculateOverallAverage(overallCorrectCount, overallWrongCount);

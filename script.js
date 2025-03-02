@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const toggleMusicButton = document.getElementById("toggle-music");
     const musicIcon = document.getElementById("music-icon");
     const savedName = localStorage.getItem("name");
-    const savedPhoto = localStorage.getItem("photo") || "imgs/default-photo.png";
+    const savedPhoto = localStorage.getItem("photo") || "imgs/standart.png";
     const overallCorrectCount = parseInt(localStorage.getItem("overallCertas")) || 0;
     const overallWrongCount = parseInt(localStorage.getItem("overallErradas")) || 0;
     const overallAverage = calculateOverallAverage(overallCorrectCount, overallWrongCount);
@@ -93,6 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("overall-correct-score").textContent = overallCorrectCount;
         document.getElementById("overall-wrong-score").textContent = overallWrongCount;
         document.getElementById("overall-average").textContent = `${overallAverage}%`;
+        document.getElementById("overall-tests-count").textContent = quizHistory.length;
         document.getElementById("profile-photo").src = savedPhoto;
         displayQuizHistory(quizHistory);
         questionCountSelector.style.display = "block";
@@ -203,47 +204,100 @@ document.addEventListener("DOMContentLoaded", () => {
 
         }
 
+        function getFormattedName(title, name) {
+            switch(title) {
+                case 'grao-viriato':
+                    return `Exc. ${name}`;
+                case 'viriato':
+                    return `Exc. ${name}`;
+                case 'sertorio':
+                    return `Exc. ${name}`;
+                case 'illustre':
+                    return `Illustre ${name}`;
+                case 'infante':
+                    return name;
+                case 'professional':
+                    return `Dr/Eng/Enf ${name}`;
+                case 'caloiro':
+                    return `Caloiro ${name}`;
+                default:
+                    return name;
+            }
+        }
+        
+        document.getElementById('photo').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('photo-preview');
+            const fileInfo = this.closest('.file-input-group').querySelector('.file-info');
+            
+            if (file) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    fileInfo.textContent = file.name;
+                }
+                
+                reader.readAsDataURL(file);
+            } else {
+                preview.src = 'imgs/standart.png';
+                fileInfo.textContent = 'Nenhum ficheiro selecionado';
+            }
+        });
+    
+
         document.getElementById("profile-form").addEventListener("submit", (event) => {
             event.preventDefault();
+            
+            const title = document.getElementById("title").value;
             const name = document.getElementById("name").value;
             const photoInput = document.getElementById("photo");
             const reader = new FileReader();
-            
+        
             // Validate form
-            if (!name.trim()) {
-                alert("Por favor insira um nome");
+            if (!title || !name.trim()) {
+                alert("Por favor preencha todos os campos");
                 return;
             }
         
             const handleProfileUpdate = (photoDataUrl) => {
+                // Format name based on title
+                const formattedName = getFormattedName(title, name);
+                
                 // Save to localStorage
-                localStorage.setItem("name", name);
+                localStorage.setItem("name", formattedName);
                 localStorage.setItem("photo", photoDataUrl);
-        
-                // Update visibility states
+                
+                // Initialize stats if not exists
+                if (!localStorage.getItem("overallCertas")) localStorage.setItem("overallCertas", "0");
+                if (!localStorage.getItem("overallErradas")) localStorage.setItem("overallErradas", "0");
+                if (!localStorage.getItem("quizHistory")) localStorage.setItem("quizHistory", "[]");
+                
+                // Update UI visibility
                 document.getElementById("profile-creator").style.display = "none";
                 document.getElementById("main-content").style.display = "flex";
                 document.getElementById("profile").style.display = "block";
                 document.getElementById("question-count-selector").style.display = "block";
-        
+                
                 // Update profile display
-                document.getElementById("profile-name").textContent = name;
+                document.getElementById("profile-name").textContent = formattedName;
                 document.getElementById("profile-photo").src = photoDataUrl;
                 
-                // Update stats
-                const overallCorrectCount = parseInt(localStorage.getItem("overallCertas")) || 0;
-                const overallWrongCount = parseInt(localStorage.getItem("overallErradas")) || 0;
-                const overallAverage = calculateOverallAverage(overallCorrectCount, overallWrongCount);
+                // Update stats display
+                const overallCorrectCount = localStorage.getItem("overallCertas") || "0";
+                const overallWrongCount = localStorage.getItem("overallErradas") || "0";
+                const overallAverage = calculateOverallAverage(
+                    parseInt(overallCorrectCount),
+                    parseInt(overallWrongCount)
+                );
                 
-                document.getElementById("overall-correct-score").textContent = 
-                    `Total de respostas corretas: ${overallCorrectCount}`;
-                document.getElementById("overall-wrong-score").textContent = 
-                    `Total de respostas erradas: ${overallWrongCount}`;
-                document.getElementById("overall-average").textContent = 
-                    `Indíce de Bom Caloiro: ${overallAverage}%`;
-        
+                document.getElementById("overall-correct-score").textContent = overallCorrectCount;
+                document.getElementById("overall-wrong-score").textContent = overallWrongCount;
+                document.getElementById("overall-average").textContent = `${overallAverage}%`;
+                
                 // Display quiz history
                 const quizHistory = JSON.parse(localStorage.getItem("quizHistory")) || [];
+                document.getElementById("overall-tests-count").textContent = quizHistory.length;
                 displayQuizHistory(quizHistory);
             };
         
@@ -253,8 +307,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 reader.readAsDataURL(photoInput.files[0]);
             } else {
                 // Use default photo
-                handleProfileUpdate("imgs/default-photo.png");
+                handleProfileUpdate("imgs/standart.png");
             }
+                
         });
 
     // Adicionar eventos aos botões de tema
@@ -269,6 +324,170 @@ document.addEventListener("DOMContentLoaded", () => {
             selectedTheme = button.getAttribute("data-theme");
         });
     });
+
+    document.getElementById('export-data').addEventListener('click', () => {
+        const data = {
+            name: localStorage.getItem('name'),
+            photo: localStorage.getItem('photo'),
+            overallCertas: localStorage.getItem('overallCertas'),
+            overallErradas: localStorage.getItem('overallErradas'),
+            musicMuted: localStorage.getItem('musicMuted'),
+            quizHistory: JSON.parse(localStorage.getItem('quizHistory') || '[]')
+        };
+    
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'boapraxe-dados.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+    
+    document.getElementById('import-data').addEventListener('click', () => {
+        document.getElementById('import-file').click();
+    });
+    
+    document.getElementById('import-file').addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    // Import data to localStorage
+                    for (const [key, value] of Object.entries(data)) {
+                        if (typeof value === 'object') {
+                            localStorage.setItem(key, JSON.stringify(value));
+                        } else {
+                            localStorage.setItem(key, value);
+                        }
+                    }
+                    alert('Dados importados com sucesso! A página será recarregada.');
+                    window.location.reload();
+                } catch (error) {
+                    alert('Erro ao importar dados. O arquivo provavelmente não é válido.');
+                }
+            };
+            reader.readAsText(file);
+        }
+    });
+    
+    document.getElementById('clear-data').addEventListener('click', () => {
+        if (confirm('Tem certeza que deseja apagar todos os dados? Não será possível voltar atás (só se guardou o ficheiro).')) {
+            localStorage.clear();
+            alert('Dados apagados com sucesso! A página será recarregada.');
+            window.location.reload();
+        }
+    });
+
+    function getShareTitle(name) {
+        const fullName = name || 'Utilizador';
+        // Don't show "Caloiro" title for non-caloiros when sharing
+        return fullName.startsWith('Caloiro ') ? fullName : fullName.replace(/^(Excelentíssimo |Illustre |Dr\/Eng\/Enf )/, '');
+    }
+
+    document.getElementById('share-stats').addEventListener('click', async () => {
+        const canvas = document.getElementById('shareCanvas');
+        const ctx = canvas.getContext('2d');
+            
+        canvas.width = 1200;
+        canvas.height = 630;
+        
+        const backgroundImage = new Image();
+        backgroundImage.src = 'imgs/share-bg.jpg';
+        
+        backgroundImage.onload = async () => {
+            // Clear canvas
+            ctx.fillStyle = '#682145';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            let renderWidth = canvas.width;
+            let renderHeight = canvas.height;
+            let offsetX = 0;
+            let offsetY = 0;
+
+            // Add overlay
+            ctx.fillStyle = 'rgba(104, 33, 69, 0.2)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw background
+            ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(104, 33, 69, 0.8)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Text settings
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            
+            // Draw title
+            ctx.font = 'bold 60px Montserrat';
+            ctx.fillText('BoaPraxe - Estatísticas', canvas.width/2, 100);
+            
+            // Get user stats with modified name display
+            const name = getShareTitle(localStorage.getItem('name'));
+            const correctCount = localStorage.getItem('overallCertas') || '0';
+            const wrongCount = localStorage.getItem('overallErradas') || '0';
+            const average = calculateOverallAverage(parseInt(correctCount), parseInt(wrongCount));
+            const testsCount = JSON.parse(localStorage.getItem('quizHistory') || '[]').length;
+            
+            // Draw stats with modified name
+            ctx.font = '40px Montserrat';
+            ctx.fillText(name, canvas.width/2, 180);
+            
+            ctx.font = '36px Montserrat';
+            ctx.fillText(`✅ Respostas Corretas: ${correctCount}`, canvas.width/2, 300);
+            ctx.fillText(`❌ Respostas Erradas: ${wrongCount}`, canvas.width/2, 380-25);
+            ctx.fillText(`🎓 Índice de Bom Caloiro: ${average}%`, canvas.width/2, 460-50);
+            ctx.fillText(`📝 Testes Realizados: ${testsCount}`, canvas.width/2, 540-75);
+
+            const currentDate = new Date().toLocaleDateString('pt-PT', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            ctx.font = '24px Montserrat';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.fillText(`Gerado em ${currentDate}`, canvas.width/2, canvas.height - 40);
+    
+            
+            try {
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                
+                if (navigator.share) {
+                    const file = new File([blob], 'boapraxe-stats.png', { type: 'image/png' });
+                    await navigator.share({
+                        files: [file],
+                        title: 'Minhas Estatísticas BoaPraxe',
+                        text: `Estatísticas na BoaPraxe:\n✅ ${correctCount}\n❌ ${wrongCount}\n🎓 ${average}%\n📝 ${testsCount} testes`
+                    });
+                } else {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'boapraxe-stats.png';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }
+            } catch (error) {
+                console.error('Error sharing stats:', error);
+                alert('Erro ao partilhar estatísticas. Tente novamente.');
+            }
+        };
+        
+        backgroundImage.onerror = () => {
+            console.error('Error loading background image');
+            alert('Erro ao carregar imagem de fundo.');
+        };
+    });
+
+
 
     // Modificar o evento de clique nos botões de contagem
             // Modificar o evento de clique nos botões de contagem
@@ -571,6 +790,8 @@ function showResults() {
         totalQuestions: totalQuestions  // Add this line
     });
     localStorage.setItem("quizHistory", JSON.stringify(quizHistory));
+
+    document.getElementById("overall-tests-count").textContent = quizHistory.length;
 
 
     // Hide quiz container and remove active class

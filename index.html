@@ -9,14 +9,43 @@
 </head>
 <body>
     <div id="profile-creator">
-        <h2>Insere a tua informação:</h2>
+        <h2>Bem-vindo à BoaPraxe!</h2>
         <form id="profile-form">
-            <label for="name">Superior/Caloiro:</label>
-            <input type="text" id="name" name="name" required>
-            <label for="photo">Foto:</label>
-            <input type="file" id="photo" name="photo" accept="image/*">
-            <button type="submit">Salvar</button>
+            <div class="form-group">
+                <label for="title">Título:</label>
+                <select id="title" name="title" required>
+                    <option value="">Selecione o seu título</option>
+                    <option value="grao-viriato">Grão-Viriato</option>
+                    <option value="viriato">Viriato</option>
+                    <option value="sertorio">Sertório</option>
+                    <option value="illustre">Illustre</option>
+                    <option value="infante">Infante</option>
+                    <option value="professional">Doutor/Engenheiro/Enfermeiro</option>
+                    <option value="caloiro">Caloiro</option>
+                </select>
+            </div>
+            <div class="form-group file-input-group">
+                <label for="photo">
+                    <div class="photo-preview">
+                        <img id="photo-preview" src="imgs/standart.png" alt="Preview da foto">
+                    </div>
+                    <span class="file-info">Clique na imagem a cima para selecionar uma foto</span>
+                </label>
+                <input type="file" id="photo" name="photo" accept="image/*">
+            </div>            
+            <div class="form-group">
+                <label for="name">Nome:</label>
+                <input type="text" id="name" name="name" required placeholder="Insira o seu nome">
+            </div>
+            <button type="submit" class="submit-btn">Começar Quiz</button>
         </form>
+        <div class="import-section">
+            <p>Já tens uma conta?</p>
+            <button id="import-data" class="data-button">
+                <span class="button-icon">📤</span>
+                <span class="button-text">Importar Dados</span>
+            </button>
+        </div>
     </div>
     <div id="main-content" style="display: none;">
         <div id="mobile-nav" style="display: none;">
@@ -53,6 +82,35 @@
                         <span class="stat-label">Índice de Bom Caloiro</span>
                         <span id="overall-average" class="stat-value"></span>
                     </div>
+                </div>
+                <div class="stat-card tests">
+                    <span class="stat-icon">📝</span>
+                    <div class="stat-info">
+                        <span class="stat-label">Testes Realizados</span>
+                        <span id="overall-tests-count" class="stat-value"></span>
+                    </div>
+                </div>
+                <div class="data-management">
+                    <div class="data-button-group">
+                        <button id="export-data" class="data-button">
+                            <span class="button-icon">💾</span>
+                            <span class="button-text">Exportar Dados</span>
+                        </button>
+                        <button id="import-data" class="data-button">
+                            <span class="button-icon">📤</span>
+                            <span class="button-text">Importar Dados</span>
+                        </button>
+                        <button id="clear-data" class="data-button danger">
+                            <span class="button-icon">🗑️</span>
+                            <span class="button-text">Limpar Dados</span>
+                        </button>
+                        <button id="share-stats" class="data-button share">
+                            <span class="button-icon">📊</span>
+                            <span class="button-text">Partilhar Estatísticas</span>
+                        </button>
+                    </div>
+                    <canvas id="shareCanvas" style="display: none;"></canvas>
+                    <input type="file" id="import-file" accept=".json" style="display: none;">
                 </div>
             </div>
             <div id="quiz-history">

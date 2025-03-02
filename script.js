@@ -682,7 +682,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function loadQuiz() {
     console.log("Loading quiz...");
-    console.log("Selected theme:", selectedTheme); // Debug do tema selecionado
+    console.log("Selected theme:", selectedTheme);
 
     const loadingTimeout = setTimeout(() => {
         const loadingScreen = document.getElementById("loading-screen");
@@ -703,46 +703,47 @@ function loadQuiz() {
                 throw new Error("Invalid data format");
             }
 
-            // Filtrar questões por tema
+            // Filter questions by theme
             const allQuestions = data.slice(1).map(row => ({
                 question: row[0],
                 answers: row.slice(1, 5),
                 correct: row[1],
-                explanation: row[6], // Add this line to capture the explanation from column 6
-                theme: row[row.length - 1] // Assumindo que o tema está na última coluna
+                explanation: row[6],
+                theme: row[5]
             }));
 
-            console.log("All questions loaded:", allQuestions);
-
-            // Filtrar questões pelo tema selecionado
+            console.log("All questions loaded:", allQuestions.length);
+            
+            // Filter questions by selected theme
             const themeQuestions = selectedTheme === "geral" 
                 ? allQuestions 
-                : allQuestions.filter(q => q.theme === selectedTheme);
+                : allQuestions.filter(q => q.theme.toLowerCase() === selectedTheme.toLowerCase());
 
-            console.log("Filtered questions by theme:", themeQuestions);
+            console.log("Filtered questions for theme", selectedTheme, ":", themeQuestions.length);
 
-            // Embaralhar e selecionar o número de questões desejado
+            if (themeQuestions.length === 0) {
+                alert("Não existem questões disponíveis para este tema.");
+                window.location.reload();
+                return;
+            }
+
+            // Select required number of questions
             questions = shuffle(themeQuestions).slice(0, totalQuestions);
-
-            console.log("Selected questions:", questions);
-
-            // Exibir o quiz primeiro
+            
+            // Show quiz container
             const quizContainer = document.getElementById("quiz-container");
             quizContainer.style.display = "block";
-            console.log("Quiz container displayed");
 
-            // Hide the loading screen with a smooth fade-out
+            // Hide loading screen
             const loadingScreen = document.getElementById("loading-screen");
+            loadingScreen.classList.add("hidden");
             setTimeout(() => {
-                loadingScreen.classList.add("hidden");
-                setTimeout(() => {
-                    loadingScreen.style.display = "none";
-                }, 500); // Match the duration of the CSS transition
-            }, 100); // Small delay to ensure quiz is displayed first
+                loadingScreen.style.display = "none";
+            }, 500);
 
             displayQuestion();
             updatePercentage();
-            updateProgressBar(); // Atualize a barra de progresso ao carregar o quiz
+            updateProgressBar();
         })
         .catch(error => {
             console.error("Erro ao carregar os dados:", error);
@@ -935,7 +936,8 @@ function displayQuizHistory(quizHistory) {
     const quizHistoryList = document.getElementById("quiz-history-list");
     quizHistoryList.innerHTML = "";
 
-    quizHistory.forEach(quiz => {
+    // Reverse the array to show newest entries first
+    [...quizHistory].reverse().forEach(quiz => {
         const listItem = document.createElement("li");
         listItem.innerHTML = `💡: ${quiz.theme} |  🔢: ${quiz.totalQuestions || "N/A"} | 🕒: ${quiz.date} | ✅: ${quiz.correctCount} | ❌: ${quiz.wrongCount}`;
         quizHistoryList.appendChild(listItem);

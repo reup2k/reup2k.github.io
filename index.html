@@ -45,7 +45,8 @@
                 <span class="button-icon">📤</span>
                 <span class="button-text">Importar Dados</span>
             </button>
-        </div>
+            <input type="file" id="import-file" accept=".json" style="display: none;">
+            </div>
     </div>
     <div id="main-content" style="display: none;">
         <div id="mobile-nav" style="display: none;">
@@ -90,16 +91,19 @@
                         <span id="overall-tests-count" class="stat-value"></span>
                     </div>
                 </div>
+            </div>
+            <div id="quiz-history">
                 <div class="data-management">
                     <div class="data-button-group">
                         <button id="export-data" class="data-button">
                             <span class="button-icon">💾</span>
                             <span class="button-text">Exportar Dados</span>
                         </button>
-                        <button id="import-data" class="data-button">
+                        <button id="import-data-management" class="data-button">
                             <span class="button-icon">📤</span>
                             <span class="button-text">Importar Dados</span>
                         </button>
+                        <input type="file" id="import-file-management" accept=".json" style="display: none;">
                         <button id="clear-data" class="data-button danger">
                             <span class="button-icon">🗑️</span>
                             <span class="button-text">Limpar Dados</span>
@@ -112,8 +116,6 @@
                     <canvas id="shareCanvas" style="display: none;"></canvas>
                     <input type="file" id="import-file" accept=".json" style="display: none;">
                 </div>
-            </div>
-            <div id="quiz-history">
                 <h3>Histórico de Quizes Finalizados</h3>
                 <div id="quiz-history-container">
                     <ul id="quiz-history-list"></ul>
@@ -168,6 +170,6 @@
     </div>
     <audio id="correct-sound" src="sounds/correct.mp3"></audio>
     <audio id="incorrect-sound" src="sounds/incorrect.mp3"></audio>
-    <audio id="background-music" src="sounds/EstudantedeViseu.mp3" loop></audio>
+    <audio id="background-music" src="sounds/musica/EstudantedeViseu.mp3" loop></audio>
 </body>
 </html>

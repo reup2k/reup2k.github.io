@@ -58,6 +58,29 @@ console.log("               Rodrigo Albuquerque pv30224");
 console.log("               Gabriela Ferreira pv30219");
 console.log("               Dinis Alves pv28377");
 
+const musicFiles = [
+    "sounds/musica/EstudantedeViseu.mp3",
+    "sounds/musica/ViseuGraciosa.mp3",
+    "sounds/musica/CaravelasMeninadaSaiaPreta.mp3",
+    "sounds/musica/AmorVadio.mp3",
+    "sounds/musica/BaladadoPadeiro.mp3"
+];
+
+function playRandomMusic() {
+    const backgroundMusic = document.getElementById("background-music");
+    const randomIndex = Math.floor(Math.random() * musicFiles.length);
+    backgroundMusic.src = musicFiles[randomIndex];
+    
+    // When one song ends, play another random one
+    backgroundMusic.onended = () => {
+        let newIndex;
+        do {
+            newIndex = Math.floor(Math.random() * musicFiles.length);
+        } while (newIndex === randomIndex && musicFiles.length > 1); // Avoid playing same song twice in a row
+        backgroundMusic.src = musicFiles[newIndex];
+        backgroundMusic.play();
+    };
+}
 
 document.addEventListener("DOMContentLoaded", () => {
     const profileCreator = document.getElementById("profile-creator");
@@ -77,18 +100,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const overallWrongCount = parseInt(localStorage.getItem("overallErradas")) || 0;
     const overallAverage = calculateOverallAverage(overallCorrectCount, overallWrongCount);
     const quizHistory = JSON.parse(localStorage.getItem("quizHistory")) || [];
-    const isMusicMuted = localStorage.getItem("musicMuted") !== "true"; // Changed this line
+    const isMusicMuted = localStorage.getItem("musicMuted") !== "true";
+    const importBtn = document.getElementById('import-data');
+    const importFile = document.getElementById('import-file');
+    const importBtnManagement = document.getElementById('import-data-management');
+    const importFileManagement = document.getElementById('import-file-management');
+
     backgroundMusic = document.getElementById("background-music");
     backgroundMusic.muted = isMusicMuted;
     musicIcon.textContent = isMusicMuted ? "🔇" : "🔊";
-    
-
+    playRandomMusic(); // Initialize with random music
 
     if (savedName) {
         profileCreator.style.display = "none";
         mainContent.style.display = "flex";
         profile.style.display = "block";
-        backgroundMusic = document.getElementById("background-music");
         document.getElementById("profile-name").textContent = savedName;
         document.getElementById("overall-correct-score").textContent = overallCorrectCount;
         document.getElementById("overall-wrong-score").textContent = overallWrongCount;
@@ -99,6 +125,59 @@ document.addEventListener("DOMContentLoaded", () => {
         questionCountSelector.style.display = "block";
     } else {
         profileCreator.style.display = "block";
+    }
+
+    // Handle import functionality
+    function handleImport(fileInput) {
+        const file = fileInput.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    // Validate data structure
+                    const requiredKeys = ['name', 'photo', 'overallCertas', 'overallErradas', 'quizHistory'];
+                    if (!requiredKeys.every(key => key in data)) {
+                        throw new Error('Formato de dados inválido');
+                    }
+
+                    // Import data to localStorage
+                    for (const [key, value] of Object.entries(data)) {
+                        if (typeof value === 'object') {
+                            localStorage.setItem(key, JSON.stringify(value));
+                        } else {
+                            localStorage.setItem(key, value);
+                        }
+                    }
+
+                    alert('Dados importados com sucesso! A página será recarregada.');
+                    window.location.reload();
+                } catch (error) {
+                    console.error('Erro ao importar:', error);
+                    alert('Erro ao importar dados. Verifique se o arquivo é válido.');
+                }
+            };
+            reader.readAsText(file);
+        }
+    }
+
+    if (importBtn && importFile) {
+        importBtn.addEventListener('click', () => {
+            importFile.click();
+        });
+        importFile.addEventListener('change', (event) => {
+            handleImport(event.target);
+        });
+    }
+
+    if (importBtnManagement && importFileManagement) {
+        importBtnManagement.addEventListener('click', () => {
+            importFileManagement.click();
+        });
+        importFileManagement.addEventListener('change', (event) => {
+            handleImport(event.target);
+        });
     }
     
     // Mobile navigation
@@ -357,6 +436,13 @@ document.addEventListener("DOMContentLoaded", () => {
             reader.onload = (e) => {
                 try {
                     const data = JSON.parse(e.target.result);
+                    
+                    // Validate data structure
+                    const requiredKeys = ['name', 'photo', 'overallCertas', 'overallErradas', 'quizHistory'];
+                    if (!requiredKeys.every(key => key in data)) {
+                        throw new Error('Formato de dados inválido');
+                    }
+    
                     // Import data to localStorage
                     for (const [key, value] of Object.entries(data)) {
                         if (typeof value === 'object') {
@@ -365,16 +451,18 @@ document.addEventListener("DOMContentLoaded", () => {
                             localStorage.setItem(key, value);
                         }
                     }
+    
                     alert('Dados importados com sucesso! A página será recarregada.');
                     window.location.reload();
                 } catch (error) {
-                    alert('Erro ao importar dados. O arquivo provavelmente não é válido.');
+                    console.error('Erro ao importar:', error);
+                    alert('Erro ao importar dados. Verifique se o arquivo é válido.');
                 }
             };
             reader.readAsText(file);
         }
     });
-    
+
     document.getElementById('clear-data').addEventListener('click', () => {
         if (confirm('Tem certeza que deseja apagar todos os dados? Não será possível voltar atás (só se guardou o ficheiro).')) {
             localStorage.clear();
@@ -521,9 +609,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     backgroundMusic = document.getElementById("background-music");
                     backgroundMusic.muted = isMusicMuted;
                     musicIcon.textContent = isMusicMuted ? "🔇" : "🔊";
-
-                    // Start quiz
+            
+                    // Start quiz with random music
                     backgroundMusic.volume = 0.02;
+                    playRandomMusic();
                     backgroundMusic.play();
                     loadQuiz();
                 });
@@ -619,6 +708,7 @@ function loadQuiz() {
                 question: row[0],
                 answers: row.slice(1, 5),
                 correct: row[1],
+                explanation: row[6], // Add this line to capture the explanation from column 6
                 theme: row[row.length - 1] // Assumindo que o tema está na última coluna
             }));
 
@@ -767,19 +857,39 @@ function showResults() {
             const questionDiv = document.createElement("div");
             questionDiv.className = `question-review ${isCorrect ? 'correct' : 'incorrect'}`;
             questionDiv.innerHTML = `
-            <h3>Pergunta ${index + 1}</h3>
-            <p class="question-text">${question.question}</p>
-            <p class="correct-answer">Resposta Correta: ${question.correct}</p>
-            <p class="user-answer">Sua Resposta: ${userAnswer || 'Não respondida'}</p>
-        `;
-        questionsReview.appendChild(questionDiv);
-    });
-    
+                <h3>Pergunta ${index + 1}</h3>
+                <p class="question-text">${question.question}</p>
+                <p class="correct-answer">Resposta Correta: ${question.correct}</p>
+                <p class="user-answer">A sua Resposta: ${userAnswer || 'Não respondida'}</p>
+                ${question.explanation ? `<div class="question-explanation"><strong>Explicação:</strong> ${question.explanation}</div>` : ''}
+            `;
+            questionsReview.appendChild(questionDiv);
+        });
+        
     // Show results section
     quizContainer.style.display = "none";
     quizResults.style.display = "block";
     
-
+    function displayQuestionsReview(questions, userAnswers) {
+        const reviewContainer = document.getElementById('questions-review');
+        reviewContainer.innerHTML = '';
+    
+        questions.forEach((question, index) => {
+            const isCorrect = question.correct === userAnswers[index];
+            const reviewDiv = document.createElement('div');
+            reviewDiv.className = `question-review ${isCorrect ? 'correct' : 'incorrect'}`;
+            
+            reviewDiv.innerHTML = `
+                <h3>Pergunta ${index + 1}</h3>
+                <p class="question-text">${question.question}</p>
+                <p class="correct-answer">Resposta Correta: ${question.answers[question.correct]}</p>
+                <p class="user-answer">A sua Resposta: ${question.answers[userAnswers[index]]}</p>
+                ${question.explanation ? `<p class="question-explanation"><strong>Explicação:</strong> ${question.explanation}</p>` : ''}
+            `;
+            
+            reviewContainer.appendChild(reviewDiv);
+        });
+    }
 
     // Add quiz to history
     quizHistory.push({

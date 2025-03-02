@@ -10,6 +10,24 @@
     }
 }
 
+/* Animation for selection */
+@keyframes selectPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes slideUp {
+  0% {
+      transform: translateY(0);
+      opacity: 1;
+  }
+  100% {
+      transform: translateY(-100%);
+      opacity: 0;
+  }
+}
+
 html, body {
   font-family: 'Montserrat', sans-serif;
   background: url('imgs/Background Praxe site.png') repeat center center;
@@ -23,7 +41,6 @@ html, body {
   overflow: hidden;
   position: fixed;
   width: 100%;
-  /* background-size: 120%; */
   animation: backgroundMove 60s ease infinite;
 }
 
@@ -31,13 +48,13 @@ html, body {
 .data-management {
   background: rgba(104, 33, 69, 0.05);
   border-radius: 12px;
-  padding: 20px;
   margin: 20px 0;
+  width: 100%;
 }
 
 .data-button-group {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));  
   gap: 12px;
 }
 
@@ -99,17 +116,6 @@ html, body {
   font-weight: 500;
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
-  .data-management {
-      padding: 15px;
-  }
-
-  .data-button {
-      padding: 10px 20px;
-      font-size: 0.9rem;
-  }
-}
 
 .data-button.share {
   background: #682145;
@@ -137,7 +143,6 @@ html, body {
 #questions-review {
   margin: 20px 0;
   max-width: 800px;
-  margin: 0 auto;
 }
 
 /* Custom scrollbar styling */
@@ -151,12 +156,21 @@ html, body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #682145;
+  background: linear-gradient(to bottom, #682145, #ff66b5);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #561a38;
+  background: linear-gradient(to bottom, #682145, #ff66b5);
+
+}
+
+.question-explanation {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  font-size: 0.95rem;
+  color: #495057;
 }
 
 .questions-review, #quiz-history-container {
@@ -281,11 +295,6 @@ html, body {
   font-size: 1.8rem;
 }
 
-.form-group {
-  margin-bottom: 1.5rem;
-  text-align: left;
-}
-
 .form-group label {
   display: block;
   margin-bottom: 0.5rem;
@@ -396,10 +405,15 @@ input[type="file"] {
 }
 
 #main-content {
+  display: flex;
+  justify-content: center;
+  gap: 40px; /* Increased gap between elements */
+  padding: 20px;
   height: 100vh;
+  width: 90%;
   overflow-y: auto;
   position: relative;
-  -webkit-overflow-scrolling: touch; /* For smooth scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
 }
 
 #profile {
@@ -408,11 +422,10 @@ input[type="file"] {
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   text-align: center;
-  width: 40%;
-  height: 80%;
+  width: 50%; /* Reduced width */
+  height: 90%;
   overflow: auto;
 }
-
 .profile-header {
   display: flex;
   align-items: center;
@@ -495,25 +508,7 @@ input[type="file"] {
   border-left: 4px solid #682145;
 }
 
-@media (max-width: 768px) {
-  .stats-container {
-      grid-template-columns: 1fr;
-  }
-  
-  .profile-header {
-      flex-direction: column;
-      text-align: center;
-  }
-}
 
-.theme-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 20px;
-  width: 100%;
-}
 
 .theme-button {
   padding: 10px;
@@ -527,13 +522,6 @@ input[type="file"] {
   min-width: 150px;
   transition: background-color 0.3s ease;
 }
-
-.theme-button.selected {
-  background-color: #682145;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-}
-
-
 
 #quiz-history {
   background: white;
@@ -599,30 +587,13 @@ input[type="file"] {
   background: #561a38;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  #quiz-history {
-      margin: 20px 10px;
-      padding: 15px;
-  }
-
-  #quiz-history h3 {
-      font-size: 1.2rem;
-  }
-
-  #quiz-history-list li {
-      padding: 12px;
-      font-size: clamp(11px, 2vw, 13px);
-  }
-}
-
 #question-count-selector {
   background: white;
   border-radius: 15px;
   padding: 20px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   max-width: 800px;
-  height: 80%;
+  height: 90%;
   width: 50%;
   margin-left: 5px;
   overflow: auto;
@@ -655,6 +626,7 @@ input[type="file"] {
 
 .theme-button.selected {
   background-color: #682145;
+  animation: selectPulse 0.3s ease-in-out;
   color: white;
   box-shadow: 0 4px 10px rgba(104, 33, 69, 0.3);
 }
@@ -668,37 +640,7 @@ input[type="file"] {
   color: white;
 }
 
-/* Animation for selection */
-@keyframes selectPulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
-}
-
-.theme-button.selected {
-  animation: selectPulse 0.3s ease-in-out;
-}
-
 /* Responsive design */
-@media (max-width: 768px) {
-  #question-count-selector {
-      padding: 20px;
-      margin: 10px;
-  }
-
-  #question-count-selector h2 {
-      font-size: 1.3rem;
-  }
-
-  .theme-buttons, .question-count-buttons {
-      grid-template-columns: 1fr;
-  }
-
-  .theme-button, .question-count {
-      padding: 12px 15px;
-      font-size: 0.9rem;
-  }
-}
 
 /* Optional: Add icons to theme buttons */
 .theme-button[data-theme="geral"]::before { content: '📚 '; }
@@ -711,18 +653,6 @@ input[type="file"] {
 .theme-button selected { 
     background-color: #8B2B5C;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-}
-
-
-@keyframes slideUp {
-    0% {
-        transform: translateY(0);
-        opacity: 1;
-    }
-    100% {
-        transform: translateY(-100%);
-        opacity: 0;
-    }
 }
 
 #loading-screen {
@@ -745,19 +675,7 @@ input[type="file"] {
     animation: slideUp 0.5s forwards;
 }
 
-#quiz-container {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  width: 50%;
-  margin-left: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 80%;
-}
+
 
 #audio-control {
   position: absolute;
@@ -794,7 +712,7 @@ input[type="file"] {
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 80%;
+  height: 90%;
 }
 
 #progress-bar-container {
@@ -861,7 +779,7 @@ button:disabled {
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 80%;
+  height: 90%;
   overflow: auto;
 }
 
@@ -900,12 +818,6 @@ button:disabled {
 
   #quiz-history-container {
     max-height: 300px; /* Limite de altura para o histórico */
-  }
-
-  #main-content {
-      flex-direction: column;
-      width: 92%;
-      margin-bottom: 70px; /* Space for navigation */
   }
 
   #profile, #quiz-container, #question-count-selector {

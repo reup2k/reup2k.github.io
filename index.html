@@ -6,6 +6,7 @@
     <title>BoaPraxe</title>
     <link rel="stylesheet" href="styles.css">
     <script src="script.js" defer></script>
+    <link rel="icon" type="image/x-icon" href="/imgs/favicon.ico">
 </head>
 <body>
     <div id="profile-creator">
@@ -37,7 +38,7 @@
                 <label for="name">Nome:</label>
                 <input type="text" id="name" name="name" required placeholder="Insira o seu nome">
             </div>
-            <button type="submit" class="submit-btn">Começar Quiz</button>
+            <button type="submit" class="submit-btn">Próximo</button>
         </form>
         <div class="import-section">
             <p>Já tens uma conta?</p>
@@ -53,6 +54,9 @@
             <button id="show-profile" class="nav-button">
                 <span>👤</span> Perfil
             </button>
+            <button id="toggle-music-mobile" class="nav-button">
+                <span id="music-icon-mobile">🔊</span>
+            </button>
             <button id="show-quiz" class="nav-button">
                 <span>📝</span> Quiz
             </button>
@@ -60,9 +64,11 @@
         <div id="profile">
             <div class="profile-header">
                 <img id="profile-photo" src="imgs/default-photo.svg" alt="Foto do perfil" class="profile-photo">
-                <h2 id="profile-name" class="profile-title"></h2>
-            </div>
-            <div class="stats-container">
+                <div class="profile-info">
+                    <h2 id="profile-name" class="profile-title"></h2>
+                    <span class="profile-hint">Clique na foto para editar o perfil</span>
+                </div>
+            </div>            <div class="stats-container">
                 <div class="stat-card correct">
                     <span class="stat-icon">✅</span>
                     <div class="stat-info">
@@ -91,6 +97,23 @@
                         <span id="overall-tests-count" class="stat-value"></span>
                     </div>
                 </div>
+                <!-- Add after the existing stat cards in stats-container -->
+                <div class="stat-card best-theme">
+                    <span class="stat-icon">📈</span>
+                    <div class="stat-info">
+                        <span class="stat-label">Melhor Tema</span>
+                        <span id="best-theme" class="stat-value"></span>
+                        <span id="best-theme-rate" class="stat-subvalue"></span>
+                    </div>
+                </div>
+                <div class="stat-card worst-theme">
+                    <span class="stat-icon">📉</span>
+                    <div class="stat-info">
+                        <span class="stat-label">Pior Tema</span>
+                        <span id="worst-theme" class="stat-value"></span>
+                        <span id="worst-theme-rate" class="stat-subvalue"></span>
+                    </div>
+                </div>
             </div>
             <div id="quiz-history">
                 <div class="data-management">
@@ -103,7 +126,6 @@
                             <span class="button-icon">📤</span>
                             <span class="button-text">Importar Dados</span>
                         </button>
-                        <input type="file" id="import-file-management" accept=".json" style="display: none;">
                         <button id="clear-data" class="data-button danger">
                             <span class="button-icon">🗑️</span>
                             <span class="button-text">Limpar Dados</span>
@@ -132,6 +154,7 @@
             <h2 id="question">A Carregar...</h2>
             <ul id="answers"></ul>
             <button id="submit-answer" disabled>Enviar Resposta</button>
+            <button id="cancel-quiz" class="cancel-button">Cancelar Quiz</button>
             <p id="result"></p>
             <div id="audio-control">
                 <button id="toggle-music" class="theme-button">
@@ -139,16 +162,24 @@
                 </button>
             </div>
         </div>
+        <!-- Replace the question-count-selector div content -->
         <div id="question-count-selector" style="display: none;">
-            <h2>Selecione um Tema</h2>
-            <div class="theme-buttons">
-                <button class="theme-button selected" data-theme="geral">Quiz Geral</button>
-                <button class="theme-button" data-theme="ruas">Ruas</button>
-                <button class="theme-button" data-theme="hierarquia">Hierarquia</button>
-                <button class="theme-button" data-theme="trajes">Trajes</button>
-                <button class="theme-button" data-theme="cv">IPV e Conselho Viriato</button>
-                <button class="theme-button" data-theme="horas">Horas</button>
+            <h2>Temas Recomendados</h2>
+            <div class="theme-buttons recommended-themes">
+                <!-- Will be populated dynamically -->
             </div>
+            
+            
+            <h2>Outros Temas</h2>
+            <div class="theme-buttons other-themes">
+                <!-- Will be populated dynamically -->
+            </div>
+            
+            <h2>Quizes Especiais</h2>
+            <div class="theme-buttons special-themes">
+                <!-- Special quizzes will be added here -->
+            </div>
+            
             <h2>Selecione o Número de Perguntas</h2>
             <div class="question-count-buttons">
                 <button class="question-count" data-count="10">10 Perguntas</button>
